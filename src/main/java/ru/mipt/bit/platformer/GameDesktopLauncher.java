@@ -11,7 +11,10 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.utils.compression.lzma.Base;
 import ru.mipt.bit.platformer.abstractions.Field;
+import ru.mipt.bit.platformer.abstractions.ModelController;
 import ru.mipt.bit.platformer.abstractions.graphics.GraphicsController;
+import ru.mipt.bit.platformer.abstractions.handlers.InputHandler;
+import ru.mipt.bit.platformer.abstractions.handlers.KeyboardInputHandler;
 import ru.mipt.bit.platformer.abstractions.models.BaseModel;
 import ru.mipt.bit.platformer.abstractions.models.Tank;
 import ru.mipt.bit.platformer.abstractions.models.Tree;
@@ -29,6 +32,8 @@ public class GameDesktopLauncher implements ApplicationListener {
     private Field field;
     private List<BaseModel> models;
     private TileMovement tileMovement;
+    private ModelController modelController;
+    private InputHandler inputHandler;
 
     @Override
     public void create() {
@@ -40,8 +45,9 @@ public class GameDesktopLauncher implements ApplicationListener {
         models = new ArrayList<>();
         GraphicsController graphicsController = new GraphicsController();
 
-        models.add(new Tank("images/tank_blue.png", new GridPoint2(1, 1), 0.4f, graphicsController));
+        models.add(new Tank("images/tank_blue.png", new GridPoint2(1, 1), 0.4f, graphicsController, new KeyboardInputHandler()));
         models.add(new Tree("images/greenTree.png", new GridPoint2(1, 3), groundLayer, graphicsController));
+        modelController = new ModelController(models, tileMovement, graphicsController);
     }
 
     @Override
@@ -51,27 +57,14 @@ public class GameDesktopLauncher implements ApplicationListener {
 
         float deltaTime = Gdx.graphics.getDeltaTime();
 
-        for (BaseModel model : models) {
-            if (model instanceof Tank) {
-                Tank tank = (Tank) model;
-                tank.handleInput();
+        modelController.updateModels(deltaTime);
 
-                if (isColliding(tank)) {
-                    tank.cancelMovement();
-                }
-                else {
-                    tank.updatePosition(tileMovement, deltaTime);
-                }
-            }
-        }
 
         models.sort(Comparator.comparingInt(model -> -model.getPosition().y));
         field.render();
 
         batch.begin();
-        for (BaseModel model : models) {
-            model.render(batch);
-        }
+        modelController.renderModels(batch);
         batch.end();
     }
 
@@ -79,18 +72,7 @@ public class GameDesktopLauncher implements ApplicationListener {
     public void dispose() {
         batch.dispose();
         field.dispose();
-        for (BaseModel model : models) {
-            model.dispose();
-        }
-    }
-
-    private boolean isColliding(Tank tank) {
-        for (BaseModel model : models) {
-            if (model instanceof Tree && model.collidesWith(tank.getDestination())) {
-                return true;
-            }
-        }
-        return false;
+        modelController.disposeModels();
     }
 
     @Override

@@ -3,15 +3,16 @@ package ru.mipt.bit.platformer.abstractions.models;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.GridPoint2;
-import ru.mipt.bit.platformer.abstractions.models.Direction;
+import ru.mipt.bit.platformer.abstractions.Renderable;
 import ru.mipt.bit.platformer.abstractions.graphics.GraphicsController;
-import ru.mipt.bit.platformer.abstractions.movement.Moveable;
+import ru.mipt.bit.platformer.abstractions.handlers.InputHandler;
+import ru.mipt.bit.platformer.abstractions.movement.Movable;
 import ru.mipt.bit.platformer.util.TileMovement;
 import static com.badlogic.gdx.Input.Keys.*;
 import static com.badlogic.gdx.math.MathUtils.isEqual;
 import static ru.mipt.bit.platformer.util.GdxGameUtils.*;
 
-public class Tank extends BaseModel implements Moveable {
+public class Tank extends BaseModel implements Movable, Renderable {
     private final float movementSpeed;
 
     private GridPoint2 currentCoordinates;
@@ -19,29 +20,23 @@ public class Tank extends BaseModel implements Moveable {
     private float movementProgress = 1f;
     private float rotation;
 
-    public Tank(String texturePath, GridPoint2 initialCoordinates, float movementSpeed, GraphicsController graphicsController) {
+    private final InputHandler inputHandler;
+
+    public Tank(String texturePath, GridPoint2 initialCoordinates, float movementSpeed, GraphicsController graphicsController,
+                InputHandler inputHandler) {
         super(texturePath, initialCoordinates, graphicsController);
         this.destinationCoordinates = new GridPoint2(initialCoordinates);
         this.currentCoordinates = initialCoordinates;
         this.movementSpeed = movementSpeed;
         this.rotation = 0f;
+
+        this.inputHandler = inputHandler;
     }
 
     @Override
     public void handleInput() {
         if (isEqual(movementProgress, 1f)) {
-            Direction direction = null;
-
-            if (Gdx.input.isKeyPressed(UP) || Gdx.input.isKeyPressed(W)) {
-                direction = Direction.UP;
-            } else if (Gdx.input.isKeyPressed(LEFT) || Gdx.input.isKeyPressed(A)) {
-                direction = Direction.LEFT;
-            } else if (Gdx.input.isKeyPressed(DOWN) || Gdx.input.isKeyPressed(S)) {
-                direction = Direction.DOWN;
-            } else if (Gdx.input.isKeyPressed(RIGHT) || Gdx.input.isKeyPressed(D)) {
-                direction = Direction.RIGHT;
-            }
-
+            Direction direction = inputHandler.handleInput();
             if (direction != null) {
                 destinationCoordinates = direction.move(currentCoordinates);
                 rotation = direction.getRotation();

@@ -21,13 +21,15 @@ import ru.mipt.bit.platformer.abstractions.models.Tree;
 import ru.mipt.bit.platformer.util.TileMovement;
 
 import static com.badlogic.gdx.graphics.GL20.GL_COLOR_BUFFER_BIT;
+import static com.badlogic.gdx.math.MathUtils.random;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.*;
 
 public class GameDesktopLauncher implements ApplicationListener {
-
+    Config config = Config.RANDOM;
     private Batch batch;
     private Field field;
     private List<BaseModel> models;
@@ -35,6 +37,9 @@ public class GameDesktopLauncher implements ApplicationListener {
     private ModelController modelController;
     private InputHandler inputHandler;
 
+    GameDesktopLauncher (Config config) {
+        this.config = config;
+    }
     @Override
     public void create() {
         batch = new SpriteBatch();
@@ -45,11 +50,14 @@ public class GameDesktopLauncher implements ApplicationListener {
         models = new ArrayList<>();
         GraphicsController graphicsController = new GraphicsController();
 
-        models.add(new Tank("images/tank_blue.png", new GridPoint2(1, 1), 0.4f, graphicsController, new KeyboardInputHandler()));
-        models.add(new Tree("images/greenTree.png", new GridPoint2(1, 3), groundLayer, graphicsController));
+        if (config == Config.RANDOM) {
+            generateRandomLevel(groundLayer, graphicsController);
+        } else if (config == Config.FILE) {
+            loadLevelFromFile("level.txt");
+        }
+
         modelController = new ModelController(models, tileMovement, graphicsController);
     }
-
     @Override
     public void render() {
         Gdx.gl.glClearColor(0f, 0f, 0.2f, 1f);
@@ -75,6 +83,49 @@ public class GameDesktopLauncher implements ApplicationListener {
         modelController.disposeModels();
     }
 
+    private void generateRandomLevel(TiledMapTileLayer groundLayer, GraphicsController graphicsController) {
+        Set<GridPoint2> occupiedPositions = new HashSet<>();
+
+        GridPoint2 playerPosition;
+        do {
+            playerPosition = new GridPoint2(random.nextInt(groundLayer.getWidth()), random.nextInt(groundLayer.getHeight()));
+        } while (occupiedPositions.contains(playerPosition));
+        models.add(new Tank("images/tank_blue.png", playerPosition, 0.4f, graphicsController, new KeyboardInputHandler()));
+        occupiedPositions.add(playerPosition);
+
+        int numberOfTrees = random.nextInt(10) + 5;
+        for (int i = 0; i < numberOfTrees; i++) {
+            GridPoint2 treePosition;
+            do {
+                treePosition = new GridPoint2(random.nextInt(groundLayer.getWidth()), random.nextInt(groundLayer.getHeight()));
+            } while (occupiedPositions.contains(treePosition));
+            models.add(new Tree("images/greenTree.png", treePosition, groundLayer, graphicsController));
+            occupiedPositions.add(treePosition);
+        }
+    }
+
+    private void loadLevelFromFile(String filePath) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            int y = 0;
+            while ((line = reader.readLine()) != null) {
+                for (int x = 0; x < line.length(); ++x) {
+                    char cell = line.charAt(x);
+                    GridPoint2 position = new GridPoint2(x, y);
+                    if (cell == 'T') {
+                        models.add(new Tree("images/greenTree.png", position, field.getLayer(), new GraphicsController()));
+                    } else if (cell == 'X') {
+                        models.add(new Tank("images/tank_blue.png", position, 0.4f, new GraphicsController(), new KeyboardInputHandler()));
+                    }
+                }
+                y++;
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public void resize(int width, int height) {}
     @Override
@@ -85,6 +136,6 @@ public class GameDesktopLauncher implements ApplicationListener {
     public static void main(String[] args) {
         Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
         config.setWindowedMode(1280, 1024);
-        new Lwjgl3Application(new GameDesktopLauncher(), config);
+        new Lwjgl3Application(new GameDesktopLauncher(Config.RANDOM), config);
     }
 }

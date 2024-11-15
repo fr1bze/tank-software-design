@@ -12,24 +12,24 @@ import static com.badlogic.gdx.Input.Keys.*;
 import static com.badlogic.gdx.math.MathUtils.isEqual;
 import static ru.mipt.bit.platformer.util.GdxGameUtils.*;
 
-public class Tank extends BaseModel implements Movable, Renderable {
+public class Tank extends BaseModel implements Movable, Renderable, Liveable {
     private final float movementSpeed;
 
     private GridPoint2 currentCoordinates;
     private GridPoint2 destinationCoordinates;
     private float movementProgress = 1f;
     private float rotation;
+    private double health;
 
     private final InputHandler inputHandler;
 
-    public Tank(String texturePath, GridPoint2 initialCoordinates, float movementSpeed, GraphicsController graphicsController,
-                InputHandler inputHandler) {
+    public Tank(String texturePath, GridPoint2 initialCoordinates, float movementSpeed,
+                GraphicsController graphicsController, InputHandler inputHandler) {
         super(texturePath, initialCoordinates, graphicsController);
         this.destinationCoordinates = new GridPoint2(initialCoordinates);
         this.currentCoordinates = initialCoordinates;
         this.movementSpeed = movementSpeed;
         this.rotation = 0f;
-
         this.inputHandler = inputHandler;
     }
 
@@ -66,5 +66,24 @@ public class Tank extends BaseModel implements Movable, Renderable {
     @Override
     public void render(Batch batch) {
         graphicsController.render(batch, getGraphics(), getRectangle(), rotation);
+    }
+
+    public boolean isReadyForNextMove() {
+        return isEqual(movementProgress, 1f);
+    }
+
+    public void setDestination(GridPoint2 destination, float rotation) {
+        this.destinationCoordinates.set(destination);
+        this.rotation = rotation;
+        this.movementProgress = 0f;
+    }
+
+    public GridPoint2 getCurrentCoordinates() {
+        return currentCoordinates;
+    }
+
+    @Override
+    public double getHealth() {
+        return health;
     }
 }

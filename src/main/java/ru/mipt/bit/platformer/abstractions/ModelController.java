@@ -1,7 +1,7 @@
 package ru.mipt.bit.platformer.abstractions;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
-import ru.mipt.bit.platformer.abstractions.graphics.GraphicsController;
+import ru.mipt.bit.platformer.abstractions.controllers.GraphicsController;
 import ru.mipt.bit.platformer.abstractions.models.BaseModel;
 import ru.mipt.bit.platformer.abstractions.models.Tank;
 import ru.mipt.bit.platformer.abstractions.models.Tree;

@@ -1,4 +1,4 @@
-package ru.mipt.bit.platformer.abstractions.graphics;
+package ru.mipt.bit.platformer.abstractions.controllers;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -18,5 +18,8 @@ public class GraphicsController {
 
     public boolean collidesWith(GridPoint2 firstObjPoint, GridPoint2 secondObjPoint) {
         return firstObjPoint.equals(secondObjPoint);
+    }
+
+    public void renderModels() {
     }
 }

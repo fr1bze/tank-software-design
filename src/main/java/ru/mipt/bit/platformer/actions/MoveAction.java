@@ -1,4 +1,4 @@
 package ru.mipt.bit.platformer.actions;
 
-public class MoveAction {
+public class MoveAction implements Action{
 }

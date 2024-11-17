@@ -7,12 +7,19 @@ plugins {
 apply from: 'versions.gradle'
 
 group 'ru.mipt.bit'
-version '1.0-SNAPSHOT'
 
 application {
     mainClassName = 'ru.mipt.bit.platformer.GameDesktopLauncher'
     if (Os.isFamily(Os.FAMILY_MAC)) {
         applicationDefaultJvmArgs = ['-XstartOnFirstThread']
+    }
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'ru.mipt.bit.platformer.GameDesktopLauncher'
+        )
     }
 }
 
@@ -24,4 +31,6 @@ dependencies {
     implementation deps.gdx.gdx
     implementation deps.gdx.backend_lwjgl3
     implementation deps.gdx.platform_desktop
+//    implementation "com.badlogicgames.gdx:gdx-platform:1.9.11:natives-linux"
+
 }

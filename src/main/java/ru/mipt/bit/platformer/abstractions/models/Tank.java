@@ -1,14 +1,13 @@
 package ru.mipt.bit.platformer.abstractions.models;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.GridPoint2;
 import ru.mipt.bit.platformer.abstractions.Renderable;
-import ru.mipt.bit.platformer.abstractions.graphics.GraphicsController;
+import ru.mipt.bit.platformer.abstractions.controllers.GraphicsController;
 import ru.mipt.bit.platformer.abstractions.handlers.InputHandler;
 import ru.mipt.bit.platformer.abstractions.movement.Movable;
 import ru.mipt.bit.platformer.util.TileMovement;
-import static com.badlogic.gdx.Input.Keys.*;
+
 import static com.badlogic.gdx.math.MathUtils.isEqual;
 import static ru.mipt.bit.platformer.util.GdxGameUtils.*;
 

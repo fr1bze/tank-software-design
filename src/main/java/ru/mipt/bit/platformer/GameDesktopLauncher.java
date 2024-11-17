@@ -9,10 +9,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Interpolation;
-import com.badlogic.gdx.utils.compression.lzma.Base;
 import ru.mipt.bit.platformer.abstractions.Field;
+import ru.mipt.bit.platformer.abstractions.LevelGenerator;
 import ru.mipt.bit.platformer.abstractions.ModelController;
-import ru.mipt.bit.platformer.abstractions.graphics.GraphicsController;
+import ru.mipt.bit.platformer.abstractions.controllers.GraphicsController;
 import ru.mipt.bit.platformer.abstractions.handlers.InputHandler;
 import ru.mipt.bit.platformer.abstractions.handlers.KeyboardInputHandler;
 import ru.mipt.bit.platformer.abstractions.models.BaseModel;
@@ -31,18 +31,53 @@ import java.util.*;
 
 public class GameDesktopLauncher implements ApplicationListener {
     Config config = Config.RANDOM;
-    private final List<AIMotion> aiControllers;
     private Batch batch;
     private Field field;
     private List<BaseModel> models;
     private TileMovement tileMovement;
     private ModelController modelController;
     private InputHandler inputHandler;
+    private GraphicsController graphicsController;
 
     GameDesktopLauncher (Config config) {
         this.config = config;
-        aiControllers = new ArrayList<>();
     }
+    @Override
+    public void create() {
+        batch = new SpriteBatch();
+        field = new Field("level.tmx", batch);
+        graphicsController = new GraphicsController(batch);
+
+        models = new ArrayList<>();
+        modelController = new ModelController(models);
+
+        LevelGenerator levelGenerator = new LevelGenerator(field, graphicsController, modelController);
+        if (config == Config.RANDOM) {
+            levelGenerator.generateRandomLevel();
+        } else if (config == Config.FILE) {
+            levelGenerator.loadLevelFromFile("level.txt");
+        }
+    }
+
+    @Override
+    public void render() {
+        Gdx.gl.glClearColor(0f, 0f, 0.2f, 1f);
+        Gdx.gl.glClear(GL_COLOR_BUFFER_BIT);
+
+        float deltaTime = Gdx.graphics.getDeltaTime();
+        modelController.updateModels(deltaTime);
+        field.render();
+        graphicsController.renderModels();
+    }
+
+    @Override
+    public void dispose() {
+        batch.dispose();
+        field.dispose();
+        modelController.disposeModels();
+    }
+
+
     @Override
     public void create() {
         batch = new SpriteBatch();
@@ -80,13 +115,6 @@ public class GameDesktopLauncher implements ApplicationListener {
         batch.begin();
         modelController.renderModels(batch);
         batch.end();
-    }
-
-    @Override
-    public void dispose() {
-        batch.dispose();
-        field.dispose();
-        modelController.disposeModels();
     }
 
     private void generateRandomLevel(TiledMapTileLayer groundLayer, GraphicsController graphicsController) {

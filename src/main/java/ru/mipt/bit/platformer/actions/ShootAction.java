@@ -1,4 +1,4 @@
 package ru.mipt.bit.platformer.actions;
 
-public class ShootAction {
+public class ShootAction implements Action{
 }

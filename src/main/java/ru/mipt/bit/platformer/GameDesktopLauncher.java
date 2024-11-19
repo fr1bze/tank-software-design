@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Interpolation;
-import ru.mipt.bit.platformer.abstractions.Field;
+import ru.mipt.bit.platformer.abstractions.models.Field;
 import ru.mipt.bit.platformer.abstractions.LevelGenerator;
 import ru.mipt.bit.platformer.abstractions.ModelController;
 import ru.mipt.bit.platformer.abstractions.controllers.GraphicsController;
@@ -51,7 +51,7 @@ public class GameDesktopLauncher implements ApplicationListener {
         models = new ArrayList<>();
         modelController = new ModelController(models);
 
-        LevelGenerator levelGenerator = new LevelGenerator(field, graphicsController, modelController);
+        LevelGenerator levelGenerator = new LevelGenerator(field, graphicsController, modelController, aiControllers);
         if (config == Config.RANDOM) {
             levelGenerator.generateRandomLevel();
         } else if (config == Config.FILE) {

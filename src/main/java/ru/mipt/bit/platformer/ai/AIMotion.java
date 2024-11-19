@@ -8,26 +8,26 @@ import ru.mipt.bit.platformer.util.TileMovement;
 import java.util.Random;
 
 public class AIMotion {
-    private final Tank tank;
+    private final Tank aiTank;
     private final TileMovement tileMovement;
     private final Random random = new Random();
 
     public AIMotion(Tank tank, TileMovement tileMovement) {
-        this.tank = tank;
+        this.aiTank = tank;
         this.tileMovement = tileMovement;
     }
 
     public void update(float deltaTime) {
-        if (tank.isReadyForNextMove()) {
+        if (aiTank.isReadyForNextMove()) {
             Direction nextDirection = getRandomDirection();
-            GridPoint2 nextPosition = nextDirection.move(tank.getCurrentCoordinates());
+            GridPoint2 nextPosition = nextDirection.move(aiTank.getCurrentCoordinates());
 
             if (canMoveTo(nextPosition)) {
-                tank.setDestination(nextPosition, nextDirection.getRotation());
+                aiTank.setDestination(nextPosition, nextDirection.getRotation());
             }
         }
-        
-        tank.updatePosition(tileMovement, deltaTime);
+
+        aiTank.updatePosition(tileMovement, deltaTime);
     }
 
     private boolean canMoveTo(GridPoint2 nextPosition) {

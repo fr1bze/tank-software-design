@@ -21,4 +21,8 @@ public class ModelController {
     public void disposeModels() {
 
     }
+
+    public List<BaseModel> getModels() {
+        return this.models;
+    }
 }

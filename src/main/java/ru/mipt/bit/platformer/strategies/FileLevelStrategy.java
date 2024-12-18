@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.GridPoint2;
 import ru.mipt.bit.platformer.abstractions.graphics.GraphicsController;
 import ru.mipt.bit.platformer.abstractions.handlers.KeyboardInputHandler;
 import ru.mipt.bit.platformer.abstractions.models.BaseModel;
+import ru.mipt.bit.platformer.abstractions.models.MapModel;
 import ru.mipt.bit.platformer.abstractions.models.Tank;
 import ru.mipt.bit.platformer.abstractions.models.Tree;
 
@@ -21,7 +22,7 @@ public class FileLevelStrategy implements LevelStrategy {
     }
 
     @Override
-    public void generateLevel(TiledMapTileLayer groundLayer, List<BaseModel> models, GraphicsController graphicsController) {
+    public void generateLevel(TiledMapTileLayer groundLayer, MapModel mapModel, List<BaseModel> models, GraphicsController graphicsController) {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
             int y = 0;
@@ -32,7 +33,7 @@ public class FileLevelStrategy implements LevelStrategy {
                     if (cell == 'T') {
                         models.add(new Tree("images/greenTree.png", position, groundLayer, graphicsController));
                     } else if (cell == 'X') {
-                        models.add(new Tank("images/tank_blue.png", position, 0.4f, graphicsController, new KeyboardInputHandler()));
+                        models.add(new Tank("images/tank_blue.png", mapModel, position, graphicsController, new KeyboardInputHandler()));
                     }
                 }
                 y++;

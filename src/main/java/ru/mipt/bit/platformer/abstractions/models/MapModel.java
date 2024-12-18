@@ -1,0 +1,66 @@
+package ru.mipt.bit.platformer.abstractions.models;
+
+import com.badlogic.gdx.math.GridPoint2;
+import ru.mipt.bit.platformer.abstractions.interfaces.Obstacleble;
+
+import java.util.HashSet;
+import java.util.Set;
+
+public class MapModel {
+    private final Set<Tree> trees = new HashSet<>();
+    private final Set<Tank> tanks = new HashSet<>();
+    private Tank player;
+
+    private int rowCount;
+    private int columnCount;
+
+    public MapModel() { }
+
+    public Set<Tree> getTrees() {
+        return trees;
+    }
+
+    public void setTrees(Set<Tree> trees) {
+        this.trees.clear();
+        this.trees.addAll(trees);
+    }
+
+    public Set<Tank> getTanks() {
+        return tanks;
+    }
+
+    public void setTanks(Set<Tank> tanks) {
+        this.tanks.clear();
+        this.tanks.addAll(tanks);
+    }
+
+    public Set<Obstacleble> getObstacles() {
+        Set<Obstacleble> obstacles = new HashSet<>(trees);
+        obstacles.addAll(tanks);
+        obstacles.add(player);
+        return obstacles;
+    }
+
+
+    public void removeTank(Tank tank) {
+        tanks.remove(tank);
+    }
+
+    public Tank getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(Tank player) {
+        this.player = player;
+    }
+
+    public void setMapSize(int rowCount, int columnCount) {
+        this.rowCount = rowCount;
+        this.columnCount = columnCount;
+    }
+
+    public boolean isOutOfBounds(GridPoint2 coordinates) {
+        return coordinates.x < 0 || coordinates.y < 0 ||
+                coordinates.x >= rowCount || coordinates.y >= columnCount;
+    }
+}

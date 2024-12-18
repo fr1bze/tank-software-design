@@ -1,36 +1,62 @@
 package ru.mipt.bit.platformer.abstractions.models;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.GridPoint2;
 import ru.mipt.bit.platformer.abstractions.Renderable;
 import ru.mipt.bit.platformer.abstractions.graphics.GraphicsController;
 import ru.mipt.bit.platformer.abstractions.handlers.InputHandler;
+import ru.mipt.bit.platformer.abstractions.interfaces.Obstacleble;
 import ru.mipt.bit.platformer.abstractions.movement.Movable;
 import ru.mipt.bit.platformer.util.TileMovement;
-import static com.badlogic.gdx.Input.Keys.*;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Set;
+
 import static com.badlogic.gdx.math.MathUtils.isEqual;
 import static ru.mipt.bit.platformer.util.GdxGameUtils.*;
 
-public class Tank extends BaseModel implements Movable, Renderable {
-    private final float movementSpeed;
+public class Tank extends BaseModel implements Movable, Renderable, Obstacleble {
 
+    static class TankConstants {
+        private static final float MOVEMENT_SPEED = 0.4f;
+        private static final float MOVEMENT_COMPLETE = 1f;
+        private static final float INITIAL_ROTATION = 0f;
+    }
+
+    private final float movementSpeed;
     private GridPoint2 currentCoordinates;
     private GridPoint2 destinationCoordinates;
-    private float movementProgress = 1f;
+    private float movementProgress;
     private float rotation;
-
     private final InputHandler inputHandler;
+    private final MapModel map;
 
-    public Tank(String texturePath, GridPoint2 initialCoordinates, float movementSpeed, GraphicsController graphicsController,
+    public Tank(String texturePath, MapModel map, GridPoint2 initialCoordinates, GraphicsController graphicsController,
                 InputHandler inputHandler) {
         super(texturePath, initialCoordinates, graphicsController);
         this.destinationCoordinates = new GridPoint2(initialCoordinates);
         this.currentCoordinates = initialCoordinates;
-        this.movementSpeed = movementSpeed;
-        this.rotation = 0f;
-
+        this.movementSpeed = TankConstants.MOVEMENT_SPEED;
+        this.rotation = TankConstants.INITIAL_ROTATION;
+        this.movementProgress = TankConstants.MOVEMENT_COMPLETE;
         this.inputHandler = inputHandler;
+        this.map = map;
+    }
+
+    public float getRotation() {
+        return rotation;
+    }
+
+    public GridPoint2 getCurrentCoordinates() {
+        return this.currentCoordinates;
+    }
+
+    public boolean isReadyForNextMove() {
+        boolean movementComplete = isCompleteMovement();
+        boolean canMoveToNextPoint = canMoveToPoint(destinationCoordinates);
+
+        return movementComplete && canMoveToNextPoint;
     }
 
     @Override
@@ -50,7 +76,7 @@ public class Tank extends BaseModel implements Movable, Renderable {
         tileMovement.moveRectangleBetweenTileCenters(getRectangle(), currentCoordinates, destinationCoordinates, movementProgress);
 
         movementProgress = continueProgress(movementProgress, deltaTime, movementSpeed);
-        if (isEqual(movementProgress, 1f)) {
+        if (isEqual(movementProgress, TankConstants.MOVEMENT_COMPLETE)) {
             currentCoordinates.set(destinationCoordinates);
         }
     }
@@ -64,7 +90,33 @@ public class Tank extends BaseModel implements Movable, Renderable {
     }
 
     @Override
+    public Collection<GridPoint2> getCoordinates() {
+        return Arrays.asList(currentCoordinates, destinationCoordinates);
+    }
+
+    @Override
     public void render(Batch batch) {
         graphicsController.render(batch, getGraphics(), getRectangle(), rotation);
+    }
+
+    private boolean isCompleteMovement() {
+        return isEqual(movementProgress, TankConstants.MOVEMENT_COMPLETE);
+    }
+
+    private boolean canMoveToPoint(GridPoint2 coordinates) {
+        return !isObstacle(coordinates, map.getObstacles());
+    }
+
+    private boolean isObstacle(GridPoint2 coordinates, Set<Obstacleble> obstacles) {
+        for (Obstacleble obstacle : obstacles) {
+            if (obstacle.getCoordinates().equals(coordinates)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public InputHandler getInputHandler() {
+        return this.inputHandler;
     }
 }

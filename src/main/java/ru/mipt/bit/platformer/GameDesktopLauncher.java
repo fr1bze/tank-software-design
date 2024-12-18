@@ -13,6 +13,9 @@ import ru.mipt.bit.platformer.abstractions.ModelController;
 import ru.mipt.bit.platformer.abstractions.graphics.GraphicsController;
 import ru.mipt.bit.platformer.abstractions.handlers.InputHandler;
 import ru.mipt.bit.platformer.abstractions.models.BaseModel;
+import ru.mipt.bit.platformer.abstractions.models.MapModel;
+import ru.mipt.bit.platformer.abstractions.models.Tank;
+import ru.mipt.bit.platformer.ai.AIMotionTankController;
 import ru.mipt.bit.platformer.strategies.FileLevelStrategy;
 import ru.mipt.bit.platformer.strategies.LevelStrategy;
 import ru.mipt.bit.platformer.strategies.RandomLevelStrategy;
@@ -29,34 +32,75 @@ public class GameDesktopLauncher implements ApplicationListener {
     private TileMovement tileMovement;
     private ModelController modelController;
     private InputHandler inputHandler;
+    private MapModel mapModel;
+    private List<AIMotionTankController> aiControllers;
 
     public GameDesktopLauncher(LevelStrategy levelStrategy) {
         this.levelStrategy = levelStrategy;
     }
 
+
     @Override
     public void create() {
-        batch = new SpriteBatch();
-        field = new Field("level.tmx", batch);
-        TiledMapTileLayer groundLayer = field.getLayer();
-        tileMovement = new TileMovement(groundLayer, Interpolation.smooth);
-        models = new ArrayList<>();
-        GraphicsController graphicsController = new GraphicsController();
-
-        levelStrategy.generateLevel(groundLayer, models, graphicsController);
-
-        modelController = new ModelController(models, tileMovement, graphicsController);
+        initializeGameComponents();
     }
 
     @Override
     public void render() {
+        clearScreen();
+        updateGameState();
+        renderModels();
+    }
+
+    @Override
+    public void dispose() {
+        disposeGameComponents();
+    }
+
+    @Override
+    public void resize(int width, int height) {}
+
+    @Override
+    public void pause() {}
+
+    @Override
+    public void resume() {}
+
+
+    private void initializeGameComponents() {
+        batch = new SpriteBatch();
+        field = new Field("level.tmx", batch);
+
+        TiledMapTileLayer groundLayer = field.getLayer();
+        tileMovement = new TileMovement(groundLayer, Interpolation.smooth);
+
+        models = new ArrayList<>();
+
+        aiControllers = new ArrayList<>();
+        for (BaseModel model : models) {
+            if (model instanceof Tank tank && tank.getInputHandler() == null) {
+                aiControllers.add(new AIMotionTankController(tank, tileMovement, mapModel));
+            }
+        }
+        GraphicsController graphicsController = new GraphicsController();
+        levelStrategy.generateLevel(groundLayer, mapModel, models, graphicsController);
+        modelController = new ModelController(models, tileMovement, graphicsController);
+    }
+
+    private void clearScreen() {
         Gdx.gl.glClearColor(0f, 0f, 0.2f, 1f);
         Gdx.gl.glClear(GL_COLOR_BUFFER_BIT);
+    }
 
+    private void updateGameState() {
         float deltaTime = Gdx.graphics.getDeltaTime();
-
         modelController.updateModels(deltaTime);
+        for (AIMotionTankController controller : aiControllers) {
+            controller.update(deltaTime);
+        }
+    }
 
+    private void renderModels() {
         models.sort(Comparator.comparingInt(model -> -model.getPosition().y));
         field.render();
 
@@ -65,27 +109,28 @@ public class GameDesktopLauncher implements ApplicationListener {
         batch.end();
     }
 
-    @Override
-    public void dispose() {
+    private void disposeGameComponents() {
         batch.dispose();
         field.dispose();
         modelController.disposeModels();
     }
 
-    @Override
-    public void resize(int width, int height) {}
-    @Override
-    public void pause() {}
-    @Override
-    public void resume() {}
-
     public static void main(String[] args) {
         Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
         config.setWindowedMode(1280, 1024);
 
-        if (args[0].equals("file"))
-            new Lwjgl3Application(new GameDesktopLauncher(new FileLevelStrategy(args[1])), config);
-        else
-            new Lwjgl3Application(new GameDesktopLauncher(new RandomLevelStrategy()), config);
+        LevelStrategy levelStrategy = parseLevelStrategy(args);
+        new Lwjgl3Application(new GameDesktopLauncher(levelStrategy), config);
+    }
+
+    private static LevelStrategy parseLevelStrategy(String[] args) {
+        if (args.length > 0 && "file".equalsIgnoreCase(args[0])) {
+            if (args.length > 1) {
+                return new FileLevelStrategy(args[1]);
+            } else {
+                throw new IllegalArgumentException("Incorrect arguments :(");
+            }
+        }
+        return new RandomLevelStrategy();
     }
 }

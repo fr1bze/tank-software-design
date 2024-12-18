@@ -1,5 +1,6 @@
 package ru.mipt.bit.platformer.util;
 
+import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Interpolation;
@@ -32,5 +33,9 @@ public class TileMovement {
         return rectangle
                 .setX(intermediateBottomLeftX)
                 .setY(intermediateBottomLeftY);
+    }
+
+    public TiledMapTileLayer getTileLayer() {
+        return tileLayer;
     }
 }

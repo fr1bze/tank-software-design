@@ -16,17 +16,11 @@ public enum Direction {
     }
 
     public GridPoint2 move(GridPoint2 currentPosition) {
-        switch (this) {
-            case UP:
-                return new GridPoint2(currentPosition.x, currentPosition.y + 1);
-            case DOWN:
-                return new GridPoint2(currentPosition.x, currentPosition.y - 1);
-            case LEFT:
-                return new GridPoint2(currentPosition.x - 1, currentPosition.y);
-            case RIGHT:
-                return new GridPoint2(currentPosition.x + 1, currentPosition.y);
-            default:
-                throw new IllegalArgumentException("Unknown direction");
-        }
+        return switch (this) {
+            case UP -> new GridPoint2(currentPosition.x, currentPosition.y + 1);
+            case DOWN -> new GridPoint2(currentPosition.x, currentPosition.y - 1);
+            case LEFT -> new GridPoint2(currentPosition.x - 1, currentPosition.y);
+            case RIGHT -> new GridPoint2(currentPosition.x + 1, currentPosition.y);
+        };
     }
 }

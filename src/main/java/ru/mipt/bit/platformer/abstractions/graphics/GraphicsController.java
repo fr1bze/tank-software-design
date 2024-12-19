@@ -15,8 +15,4 @@ public class GraphicsController {
 
     public void dispose() {
     }
-
-    public boolean collidesWith(GridPoint2 firstObjPoint, GridPoint2 secondObjPoint) {
-        return firstObjPoint.equals(secondObjPoint);
-    }
 }

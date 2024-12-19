@@ -2,6 +2,7 @@ package ru.mipt.bit.platformer.abstractions.models;
 
 import com.badlogic.gdx.math.GridPoint2;
 import ru.mipt.bit.platformer.abstractions.interfaces.Obstacleble;
+import ru.mipt.bit.platformer.abstractions.movement.Movable;
 
 import javax.swing.tree.TreeModel;
 import java.util.HashSet;
@@ -10,6 +11,7 @@ import java.util.Set;
 public class MapModel {
     private Set<Tree> trees = new HashSet<>();
     private Set<Tank> tanks = new HashSet<>();
+    private final Set<Movable> bullets = new HashSet<>();
     private Tank player;
 
     private int rowCount;
@@ -24,7 +26,6 @@ public class MapModel {
     }
 
     public MapModel() {
-
     }
 
     public Set<Tree> getTrees() {
@@ -52,6 +53,17 @@ public class MapModel {
         return obstacles;
     }
 
+    public Set<Movable> getBullets() {
+        return bullets;
+    }
+
+    public void addBullet(Movable bulletModel) {
+        bullets.add(bulletModel);
+    }
+
+    public void removeBullet(Bullet bulletModel) {
+        bullets.remove(bulletModel);
+    }
 
     public void removeTank(Tank tank) {
         tanks.remove(tank);

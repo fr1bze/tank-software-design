@@ -1,17 +1,33 @@
 package ru.mipt.bit.platformer.abstractions.handlers;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import org.springframework.boot.Banner;
+import ru.mipt.bit.platformer.abstractions.ModelController;
 import ru.mipt.bit.platformer.abstractions.models.Direction;
+import ru.mipt.bit.platformer.util.ButtonHandler;
 import ru.mipt.bit.platformer.util.ToggleHealthBarCommand;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.Executor;
 
 import static com.badlogic.gdx.Input.Keys.*;
 
+
 public class KeyboardInputHandler implements InputHandler {
-    private ToggleHealthBarCommand toggleHealthBarCommand;
-    public KeyboardInputHandler(ToggleHealthBarCommand toggleHealthBarCommand) {
-        this.toggleHealthBarCommand = toggleHealthBarCommand;
+
+    private final ButtonHandler buttonHandler;
+    private final ModelController modelController;
+
+    public KeyboardInputHandler(ButtonHandler buttonHandler, ModelController modelController) {
+        this.buttonHandler = buttonHandler;
+        this.modelController = modelController;
+
+        buttonHandler.addButtonAction(
+                List.of(L),
+                new ToggleHealthBarCommand(this.modelController.getTanks()),
+                true
+        );
     }
 
     @Override
@@ -29,8 +45,6 @@ public class KeyboardInputHandler implements InputHandler {
     }
 
     public void handleHealthInput() {
-        if (Gdx.input.isKeyPressed(Input.Keys.L)) {
-            toggleHealthBarCommand.execute();
-        }
+        buttonHandler.checkInput(Gdx.input);
     }
 }

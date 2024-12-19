@@ -1,4 +1,4 @@
-package ru.mipt.bit.platformer.abstractions;
+package ru.mipt.bit.platformer.abstractions.models;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.maps.MapRenderer;

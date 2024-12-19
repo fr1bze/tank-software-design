@@ -8,37 +8,36 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import ru.mipt.bit.platformer.abstractions.Renderable;
 import ru.mipt.bit.platformer.abstractions.interfaces.Livable;
+import ru.mipt.bit.platformer.abstractions.models.BaseModel;
+import ru.mipt.bit.platformer.abstractions.models.Tank;
 import ru.mipt.bit.platformer.util.GdxGameUtils;
 
-public class HealthBarDecorator implements Renderable {
-    private final Renderable wrappee;
+public class HealthBarDecorator implements Livable {
+    private final Livable wrappee;
 
-    public HealthBarDecorator(Renderable wrappee) {
-        this.wrappee = wrappee;
+    public HealthBarDecorator(Livable tank) {
+        this.wrappee = tank;
     }
 
-    @Override
     public void render(Batch batch) {
-        wrappee.render(batch);
-        renderHealthbar(batch);
+        if (wrappee instanceof Tank tank) {
+            tank.render(batch);
+            renderHealthbar(batch);
+        }
     }
 
-    @Override
     public void dispose() {
     }
 
-    @Override
     public Rectangle getRectangle() {
         return createRectangle();
     }
 
     private void renderHealthbar(Batch batch) {
-        if (wrappee instanceof Livable livable) {
-            var health = livable.getHealth();
-            var healthbarTexture = getHealthbarTexture(health);
-            var rectangle = createRectangle();
-            GdxGameUtils.drawTextureRegionUnscaled(batch, healthbarTexture, rectangle, 0f);
-        }
+        var health = getHealth();
+        var healthbarTexture = getHealthbarTexture(health);
+        var rectangle = createRectangle();
+        GdxGameUtils.drawTextureRegionUnscaled(batch, healthbarTexture, rectangle, 0f);
     }
 
     private TextureRegion getHealthbarTexture(float relativeHealth) {
@@ -53,8 +52,16 @@ public class HealthBarDecorator implements Renderable {
     }
 
     private Rectangle createRectangle() {
-        var rectangle = new Rectangle(wrappee.getRectangle());
-        rectangle.y += 90;
-        return rectangle;
+        if (wrappee instanceof Tank tank) {
+            var rectangle = new Rectangle(tank.getRectangle());
+            rectangle.y += 90;
+            return rectangle;
+        }
+        else return new Rectangle();
+    }
+
+    @Override
+    public float getHealth() {
+        return wrappee.getHealth();
     }
 }

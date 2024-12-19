@@ -1,8 +1,8 @@
 package ru.mipt.bit.platformer.abstractions;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
-import ru.mipt.bit.platformer.abstractions.graphics.GraphicsController;
 import ru.mipt.bit.platformer.abstractions.models.BaseModel;
+import ru.mipt.bit.platformer.abstractions.models.MapModel;
 import ru.mipt.bit.platformer.abstractions.models.Tank;
 import ru.mipt.bit.platformer.abstractions.models.Tree;
 import ru.mipt.bit.platformer.abstractions.movement.Movable;
@@ -13,14 +13,15 @@ import java.util.Collection;
 import java.util.List;
 
 public class ModelController {
-    private final List<BaseModel> models;
+    private List<BaseModel> models;
     private final TileMovement tileMovement;
-    private final GraphicsController graphicsController;
+    private final MapModel map;
 
-    public ModelController(List<BaseModel> models, TileMovement tileMovement, GraphicsController graphicsController) {
+
+    public ModelController(List<BaseModel> models, TileMovement tileMovement, MapModel map) {
         this.models = models;
         this.tileMovement = tileMovement;
-        this.graphicsController = graphicsController;
+        this.map = map;
     }
 
     public void updateModels(float deltaTime) {
@@ -69,5 +70,13 @@ public class ModelController {
         for (BaseModel model : models) {
             model.dispose();
         }
+    }
+
+    public List<BaseModel> getModels() {
+        return this.models;
+    }
+
+    public void initialize(List<BaseModel> models) {
+        this.models = models;
     }
 }

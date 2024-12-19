@@ -44,12 +44,37 @@ public class Tank extends BaseModel implements Movable, Renderable, Obstacleble 
         this.map = map;
     }
 
+    public Tank(GridPoint2 initialCoordinates) {
+        super(initialCoordinates);
+        this.movementSpeed = TankConstants.MOVEMENT_SPEED;
+        currentCoordinates = initialCoordinates;
+        this.inputHandler = null;
+        this.map = null;
+    }
+
     public float getRotation() {
         return rotation;
     }
 
     public GridPoint2 getCurrentCoordinates() {
         return this.currentCoordinates;
+    }
+
+    public void move(Direction direction, Set<Obstacleble> obstacles, int rowCount, int columnCount) {
+        GridPoint2 newCoordinates = direction.move(currentCoordinates);
+
+        if (newCoordinates.x < 0 || newCoordinates.x >= columnCount || newCoordinates.y < 0 || newCoordinates.y >= rowCount) {
+            cancelMovement();
+            return;
+        }
+        for (Obstacleble obstacle : obstacles) {
+            if (obstacle.getCoordinates().contains(newCoordinates)) {
+                cancelMovement();
+                return;
+            }
+        }
+        destinationCoordinates.set(newCoordinates);
+        movementProgress = 0f;
     }
 
     public boolean isReadyForNextMove() {

@@ -19,6 +19,10 @@ public class Tree extends BaseModel implements Renderable, Obstacleble {
         moveRectangleAtTileCenter(layer, getRectangle(), getPosition());
     }
 
+    public Tree(GridPoint2 gridPoint2) {
+        super(gridPoint2);
+    }
+
     public void render(Batch batch) {
         graphicsController.render(batch, getGraphics(), getRectangle(), 0f);
     }

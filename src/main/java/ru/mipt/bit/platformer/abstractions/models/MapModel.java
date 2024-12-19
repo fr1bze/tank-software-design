@@ -3,18 +3,32 @@ package ru.mipt.bit.platformer.abstractions.models;
 import com.badlogic.gdx.math.GridPoint2;
 import ru.mipt.bit.platformer.abstractions.interfaces.Obstacleble;
 
+import javax.swing.tree.TreeModel;
 import java.util.HashSet;
 import java.util.Set;
 
 public class MapModel {
-    private final Set<Tree> trees = new HashSet<>();
-    private final Set<Tank> tanks = new HashSet<>();
+    private Set<Tree> trees = new HashSet<>();
+    private Set<Tank> tanks = new HashSet<>();
     private Tank player;
 
     private int rowCount;
     private int columnCount;
 
-    public MapModel() { }
+    public MapModel(Set<Tree> trees, Set<Tank> tanks, Tank player, int rows, int columns) { 
+        this.trees = trees;
+        this.tanks = tanks;
+        this.player = player;
+        this.rowCount = rows;
+        this.columnCount = columns;
+    }
+
+    public MapModel() {
+
+    }
+
+    public MapModel(Set<TreeModel> trees, Set<Tank> tanks, Tank player, int rows, int columns) {
+    }
 
     public Set<Tree> getTrees() {
         return trees;

@@ -15,12 +15,18 @@ public abstract class BaseModel {
     private Rectangle rectangle;
     private GridPoint2 position;
     protected final GraphicsController graphicsController;
+
     BaseModel(String texturePath, GridPoint2 initialPosition, GraphicsController graphicsController) {
         this.texture = new Texture(texturePath);
         this.graphicsController = graphicsController;
         this.graphics = new TextureRegion(texture);
         this.rectangle = createBoundingRectangle(graphics);
         this.position = new GridPoint2(initialPosition);
+    }
+
+    public BaseModel(GridPoint2 position) {
+        this.position = position;
+        graphicsController = null;
     }
 
     public Texture getTexture() {

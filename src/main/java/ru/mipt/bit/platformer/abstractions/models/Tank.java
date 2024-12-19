@@ -5,23 +5,26 @@ import com.badlogic.gdx.math.GridPoint2;
 import ru.mipt.bit.platformer.abstractions.Renderable;
 import ru.mipt.bit.platformer.abstractions.graphics.GraphicsController;
 import ru.mipt.bit.platformer.abstractions.handlers.InputHandler;
+import ru.mipt.bit.platformer.abstractions.interfaces.Livable;
 import ru.mipt.bit.platformer.abstractions.interfaces.Obstacleble;
 import ru.mipt.bit.platformer.abstractions.movement.Movable;
 import ru.mipt.bit.platformer.util.TileMovement;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Random;
 import java.util.Set;
 
 import static com.badlogic.gdx.math.MathUtils.isEqual;
 import static ru.mipt.bit.platformer.util.GdxGameUtils.*;
 
-public class Tank extends BaseModel implements Movable, Renderable, Obstacleble {
+public class Tank extends BaseModel implements Movable, Renderable, Obstacleble, Livable {
 
     static class TankConstants {
         private static final float MOVEMENT_SPEED = 0.4f;
         private static final float MOVEMENT_COMPLETE = 1f;
         private static final float INITIAL_ROTATION = 0f;
+        private static final float MAX_HEALTH = 100.0f;
     }
 
     private final float movementSpeed;
@@ -31,6 +34,7 @@ public class Tank extends BaseModel implements Movable, Renderable, Obstacleble 
     private float rotation;
     private final InputHandler inputHandler;
     private final MapModel map;
+    private float health;
 
     public Tank(String texturePath, MapModel map, GridPoint2 initialCoordinates, GraphicsController graphicsController,
                 InputHandler inputHandler) {
@@ -42,6 +46,7 @@ public class Tank extends BaseModel implements Movable, Renderable, Obstacleble 
         this.movementProgress = TankConstants.MOVEMENT_COMPLETE;
         this.inputHandler = inputHandler;
         this.map = map;
+        this.health = new Random().nextFloat(21.0f) + 80f;
     }
 
     public Tank(GridPoint2 initialCoordinates) {
@@ -50,6 +55,7 @@ public class Tank extends BaseModel implements Movable, Renderable, Obstacleble 
         currentCoordinates = initialCoordinates;
         this.inputHandler = null;
         this.map = null;
+        this.health = new Random().nextFloat(21.0f) + 80f;
     }
 
     public float getRotation() {
@@ -108,6 +114,11 @@ public class Tank extends BaseModel implements Movable, Renderable, Obstacleble 
 
     public void cancelMovement() {
         movementProgress = 1f;
+    }
+
+    @Override
+    public float getHealth() {
+        return this.health;
     }
 
     public GridPoint2 getDestination() {

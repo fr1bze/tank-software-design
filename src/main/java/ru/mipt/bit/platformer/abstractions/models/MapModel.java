@@ -15,7 +15,7 @@ public class MapModel {
     private int rowCount;
     private int columnCount;
 
-    public MapModel(Set<Tree> trees, Set<Tank> tanks, Tank player, int rows, int columns) { 
+    public MapModel(Set<Tree> trees, Set<Tank> tanks, Tank player, int rows, int columns) {
         this.trees = trees;
         this.tanks = tanks;
         this.player = player;
@@ -25,9 +25,6 @@ public class MapModel {
 
     public MapModel() {
 
-    }
-
-    public MapModel(Set<TreeModel> trees, Set<Tank> tanks, Tank player, int rows, int columns) {
     }
 
     public Set<Tree> getTrees() {

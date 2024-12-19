@@ -44,7 +44,7 @@ public class RandomLevelStrategy implements LevelStrategy {
             } while (aiPosition.equals(playerPosition) || isPositionOccupied(aiPosition, models));
 
             Tank aiTank = new Tank(
-                    "images/tank_blue.png",
+                    "images/tank_red.png",
                     mapModel,
                     aiPosition,
                     graphicsController,

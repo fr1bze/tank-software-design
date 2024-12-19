@@ -8,6 +8,8 @@ import ru.mipt.bit.platformer.abstractions.models.Tree;
 import ru.mipt.bit.platformer.abstractions.movement.Movable;
 import ru.mipt.bit.platformer.util.TileMovement;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class ModelController {
@@ -34,6 +36,16 @@ public class ModelController {
                 }
             }
         }
+    }
+
+    public Collection<Renderable> getTanks() {
+        Collection<Renderable> tanks = new ArrayList<>();
+        for (BaseModel model: models) {
+            if (model instanceof Tank) {
+                tanks.add((Renderable) model);
+            }
+        }
+        return tanks;
     }
 
     private boolean isColliding(Tank tank) {

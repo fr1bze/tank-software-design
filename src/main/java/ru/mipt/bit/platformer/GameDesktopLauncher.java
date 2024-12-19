@@ -12,6 +12,7 @@ import ru.mipt.bit.platformer.abstractions.Field;
 import ru.mipt.bit.platformer.abstractions.ModelController;
 import ru.mipt.bit.platformer.abstractions.graphics.GraphicsController;
 import ru.mipt.bit.platformer.abstractions.handlers.InputHandler;
+import ru.mipt.bit.platformer.abstractions.handlers.KeyboardInputHandler;
 import ru.mipt.bit.platformer.abstractions.models.BaseModel;
 import ru.mipt.bit.platformer.abstractions.models.MapModel;
 import ru.mipt.bit.platformer.abstractions.models.Tank;
@@ -20,6 +21,7 @@ import ru.mipt.bit.platformer.strategies.FileLevelStrategy;
 import ru.mipt.bit.platformer.strategies.LevelStrategy;
 import ru.mipt.bit.platformer.strategies.RandomLevelStrategy;
 import ru.mipt.bit.platformer.util.TileMovement;
+import ru.mipt.bit.platformer.util.ToggleHealthBarCommand;
 
 import static com.badlogic.gdx.graphics.GL20.GL_COLOR_BUFFER_BIT;
 import java.util.*;
@@ -85,6 +87,7 @@ public class GameDesktopLauncher implements ApplicationListener {
         GraphicsController graphicsController = new GraphicsController();
         levelStrategy.generateLevel(groundLayer, mapModel, models, graphicsController);
         modelController = new ModelController(models, tileMovement, graphicsController);
+        inputHandler  = new KeyboardInputHandler(new ToggleHealthBarCommand(modelController.getTanks()));
     }
 
     private void clearScreen() {
@@ -98,6 +101,7 @@ public class GameDesktopLauncher implements ApplicationListener {
         for (AIMotionTankController controller : aiControllers) {
             controller.update(deltaTime);
         }
+        inputHandler.handleHealthInput();
     }
 
     private void renderModels() {
